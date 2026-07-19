@@ -13,7 +13,9 @@ public class Config {
     private static final String ROTN_CLAMP_COMMENT =
             "FOV Clamp: 6 levels. 0 = OFF; levels 1-5 stop slowing effects from shrinking\n"
           + "the FOV further than 1-5 levels of Slowness would (movement FOV)\n"
-          + "multiplier floors: 1 = 0.925 (Slowness I), 2 = 0.850 (Slowness II), etc";
+          + "multiplier floors: 1 = 0.925 (Slowness I), 2 = 0.850 (Slowness II), etc\n"
+          + "You may also adjust these values using in-game slash commands:\n"
+          + "'/fovclamp' and '/foveffects'";
 
     private static Configuration configuration;
     private static float fovEffectScale = 1.0F;
