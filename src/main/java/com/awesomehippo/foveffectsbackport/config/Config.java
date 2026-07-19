@@ -9,6 +9,12 @@ public class Config {
 
     public static final int ROTN_CLAMP_MAX = 5;
 
+    // written into the .cfg file above the property; newlines become separate # lines
+    private static final String ROTN_CLAMP_COMMENT =
+            "FOV Clamp: 6 levels. 0 = OFF; levels 1-5 stop slowing effects from shrinking\n"
+          + "the FOV further than 1-5 levels of Slowness would (movement FOV)\n"
+          + "multiplier floors: 1 = 0.925 (Slowness I), 2 = 0.850 (Slowness II), etc";
+
     private static Configuration configuration;
     private static float fovEffectScale = 1.0F;
     private static int rotnClampLevel = 0;
@@ -18,7 +24,7 @@ public class Config {
         configuration.load();
 
         fovEffectScale = (float) configuration.get(CATEGORY, "fovEffectScale", 1.0, null, 0.0, 1.0).getDouble();
-        rotnClampLevel = configuration.get(CATEGORY, "rotnClampLevel", 0, null, 0, ROTN_CLAMP_MAX).getInt();
+        rotnClampLevel = configuration.get(CATEGORY, "rotnClampLevel", 0, ROTN_CLAMP_COMMENT, 0, ROTN_CLAMP_MAX).getInt();
 
         // probably not necessary feature: migrate the on/off 'rotnMode'
         // toggle from dev builds
@@ -60,7 +66,7 @@ public class Config {
         }
 
         configuration.get(CATEGORY, "fovEffectScale", 1.0, null, 0.0, 1.0).set(fovEffectScale);
-        configuration.get(CATEGORY, "rotnClampLevel", 0, null, 0, ROTN_CLAMP_MAX).set(rotnClampLevel);
+        configuration.get(CATEGORY, "rotnClampLevel", 0, ROTN_CLAMP_COMMENT, 0, ROTN_CLAMP_MAX).set(rotnClampLevel);
         configuration.save();
     }
 }
