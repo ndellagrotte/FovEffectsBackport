@@ -2,6 +2,7 @@ package com.awesomehippo.foveffectsbackport.gui;
 
 import com.awesomehippo.foveffectsbackport.config.Config;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionsRowList;
 import net.minecraft.client.gui.GuiVideoSettings;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class VideoSettingsHandler {
     private static final int SLIDER_ID = 0xF0EFEC75; // basically a random ID
+    private static final int ROTN_BUTTON_ID = 0xF0EFEC76; // basically not a random ID
 
     private GuiSlider slider;
     private int lastPercent = -1;
@@ -42,8 +44,29 @@ public class VideoSettingsHandler {
                 true
         );
 
+        // row-list entries never reach actionPerformed, so the toggle happens
+        // in mousePressed (the only callback GuiOptionsRowList.Row delivers)
+        GuiButton rotnButton = new GuiButton(
+                ROTN_BUTTON_ID,
+                screen.width / 2 + 5,
+                0,
+                150,
+                20,
+                rotnButtonText()
+        ) {
+            @Override
+            public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+                if (super.mousePressed(mc, mouseX, mouseY)) {
+                    Config.setRotnMode(!Config.isRotnMode());
+                    displayString = rotnButtonText();
+                    return true;
+                }
+                return false;
+            }
+        };
+
         GuiOptionsRowList rows = (GuiOptionsRowList) screen.optionsRowList;
-        rows.options.add(new GuiOptionsRowList.Row(slider, null));
+        rows.options.add(new GuiOptionsRowList.Row(slider, rotnButton));
     }
 
     @SubscribeEvent
@@ -69,5 +92,10 @@ public class VideoSettingsHandler {
         if (button != null && button.enabled && button.id == 200) {
             Config.save();
         }
+    }
+
+    private static String rotnButtonText() {
+        return I18n.format("options.rotnMode") + ": "
+                + I18n.format(Config.isRotnMode() ? "options.on" : "options.off");
     }
 }
