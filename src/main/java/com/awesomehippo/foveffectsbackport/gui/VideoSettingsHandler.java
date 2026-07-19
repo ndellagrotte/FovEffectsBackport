@@ -2,7 +2,6 @@ package com.awesomehippo.foveffectsbackport.gui;
 
 import com.awesomehippo.foveffectsbackport.config.Config;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionsRowList;
 import net.minecraft.client.gui.GuiVideoSettings;
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class VideoSettingsHandler {
     private static final int SLIDER_ID = 0xF0EFEC75; // basically a random ID
-    private static final int ROTN_BUTTON_ID = 0xF0EFEC76; // basically not a random ID
+    private static final int ROTN_SLIDER_ID = 0xF0EFEC76; // basically not a random ID
 
     private GuiSlider slider;
     private int lastPercent = -1;
@@ -44,29 +43,31 @@ public class VideoSettingsHandler {
                 true
         );
 
-        // row-list entries never reach actionPerformed, so the toggle happens
-        // in mousePressed (the only callback GuiOptionsRowList.Row delivers)
-        GuiButton rotnButton = new GuiButton(
-                ROTN_BUTTON_ID,
+        // notched slider: the callback runs on every press/drag
+        GuiSlider clampSlider = new GuiSlider(
+                ROTN_SLIDER_ID,
                 screen.width / 2 + 5,
                 0,
                 150,
                 20,
-                rotnButtonText()
-        ) {
-            @Override
-            public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-                if (super.mousePressed(mc, mouseX, mouseY)) {
-                    Config.setRotnMode(!Config.isRotnMode());
-                    displayString = rotnButtonText();
-                    return true;
+                "",
+                "",
+                0,
+                Config.ROTN_CLAMP_MAX,
+                Config.getRotnClampLevel(),
+                false,
+                true,
+                s -> {
+                    int level = s.getValueInt();
+                    s.setValue(level);
+                    Config.setRotnClampLevel(level);
+                    s.displayString = clampSliderText(level);
                 }
-                return false;
-            }
-        };
+        );
+        clampSlider.displayString = clampSliderText(Config.getRotnClampLevel());
 
         GuiOptionsRowList rows = (GuiOptionsRowList) screen.optionsRowList;
-        rows.options.add(new GuiOptionsRowList.Row(slider, rotnButton));
+        rows.options.add(new GuiOptionsRowList.Row(slider, clampSlider));
     }
 
     @SubscribeEvent
@@ -94,8 +95,10 @@ public class VideoSettingsHandler {
         }
     }
 
-    private static String rotnButtonText() {
-        return I18n.format("options.rotnMode") + ": "
-                + I18n.format(Config.isRotnMode() ? "options.on" : "options.off");
+    private static String clampSliderText(int level) {
+        String value = level == 0
+                ? I18n.format("options.off")
+                : I18n.format("options.rotnClamp.slow") + " " + I18n.format("enchantment.level." + level);
+        return I18n.format("options.rotnClamp") + ": " + value;
     }
 }

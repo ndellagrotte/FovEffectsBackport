@@ -10,19 +10,24 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class FovEffectsBackportHandler {
 
-    // '0.925' is the movement multiplier applied by Slowness I
-    // math: (0.85 + 1.0) / 2.0 = 0.925
-    private static final float ROTN_FLOOR = 0.925F;
+    // each clamp level floors the movement multiplier at the value that many
+    // levels of Slowness would produce: speed ratio 1 - 0.15*level, mapped
+    // through (ratio + 1.0) / 2.0, so floor = 1.0 - 0.075*level
+    // Slow I -> 0.925, II -> 0.850, III -> 0.775, IV -> 0.700, V -> 0.625
+    private static float rotnFloor(int level) {
+        return 1.0F - 0.075F * level;
+    }
 
     // main logic
     @SubscribeEvent
     public void onFovUpdate(FOVUpdateEvent event) {
         float fov = event.getFov();
 
-        // rotn mode floors the raw movement multiplier first, then the
+        // the rotn clamp floors the raw movement multiplier first, then the
         // FOV Effects slider attenuates the (already clamped) value as normal
-        if (Config.isRotnMode()) {
-            fov = applyRotnFloor(event.getEntity(), fov);
+        int clampLevel = Config.getRotnClampLevel();
+        if (clampLevel > 0) {
+            fov = applyRotnFloor(event.getEntity(), fov, rotnFloor(clampLevel));
         }
 
         float scale = Config.getFovEffectScale();
@@ -39,7 +44,7 @@ public class FovEffectsBackportHandler {
     // the flying (x1.1) and bow-zoom factors folded into the event's fov pass through
     // unchanged, as do all positive multipliers (speed, uhhh whatever else makes your
     // FOV higher)
-    private static float applyRotnFloor(EntityPlayer player, float fov) {
+    private static float applyRotnFloor(EntityPlayer player, float fov, float floor) {
         float walkSpeed = player.capabilities.getWalkSpeed();
         if (walkSpeed == 0.0F) {
             // vanilla forces the whole modifier to 1.0 in this case
@@ -48,12 +53,12 @@ public class FovEffectsBackportHandler {
 
         IAttributeInstance speed = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         float movement = (float) ((speed.getAttributeValue() / walkSpeed + 1.0D) / 2.0D);
-        if (Float.isNaN(movement) || Float.isInfinite(movement) || movement <= 0.0F || movement >= ROTN_FLOOR) {
+        if (Float.isNaN(movement) || Float.isInfinite(movement) || movement <= 0.0F || movement >= floor) {
             return fov;
         }
 
         // divide the raw movement component out of the composed modifier and
         // re-apply the floored one
-        return fov / movement * ROTN_FLOOR;
+        return fov / movement * floor;
     }
 }

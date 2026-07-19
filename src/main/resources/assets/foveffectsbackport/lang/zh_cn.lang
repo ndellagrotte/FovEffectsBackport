@@ -1,4 +1,5 @@
 options.fovEffectScale=视场角效果
 options.fovEffectScale.tooltip=控制游戏机制效果改变视场角的程度。
-options.rotnMode=RotN模式
-options.rotnMode.tooltip=防止叠加的负面效果使视场角缩小超过单级缓慢效果的程度。
+options.rotnClamp=视场角钳制
+options.rotnClamp.slow=缓慢
+options.rotnClamp.tooltip=防止减速效果使视场角缩小超过所选缓慢等级的程度。
