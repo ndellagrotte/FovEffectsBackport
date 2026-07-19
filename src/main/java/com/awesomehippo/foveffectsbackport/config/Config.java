@@ -9,12 +9,14 @@ public class Config {
 
     private static Configuration configuration;
     private static float fovEffectScale = 1.0F;
+    private static boolean rotnMode = false;
 
     public static void load(File configFile) {
         configuration = new Configuration(configFile);
         configuration.load();
 
         fovEffectScale = (float) configuration.get(CATEGORY, "fovEffectScale", 1.0, null, 0.0, 1.0).getDouble();
+        rotnMode = configuration.get(CATEGORY, "rotnMode", false, null).getBoolean();
 
         if (configuration.hasChanged()) {
             configuration.save();
@@ -35,12 +37,21 @@ public class Config {
         fovEffectScale = (float) Math.sqrt(clamped / 100.0D);
     }
 
+    public static boolean isRotnMode() {
+        return rotnMode;
+    }
+
+    public static void setRotnMode(boolean enabled) {
+        rotnMode = enabled;
+    }
+
     public static void save() {
         if (configuration == null) {
             return;
         }
 
         configuration.get(CATEGORY, "fovEffectScale", 1.0, null, 0.0, 1.0).set(fovEffectScale);
+        configuration.get(CATEGORY, "rotnMode", false, null).set(rotnMode);
         configuration.save();
     }
 }
