@@ -20,7 +20,14 @@ public class Config {
         fovEffectScale = (float) configuration.get(CATEGORY, "fovEffectScale", 1.0, null, 0.0, 1.0).getDouble();
         rotnClampLevel = configuration.get(CATEGORY, "rotnClampLevel", 0, null, 0, ROTN_CLAMP_MAX).getInt();
 
-        if (configuration.hasChanged()) {
+        // probably not necessary feature: migrate the on/off 'rotnMode'
+        // toggle from dev builds
+        if (configuration.getCategory(CATEGORY).containsKey("rotnMode")) {
+            if (configuration.getCategory(CATEGORY).remove("rotnMode").getBoolean() && rotnClampLevel == 0) {
+                rotnClampLevel = 1;
+            }
+            save();
+        } else if (configuration.hasChanged()) {
             configuration.save();
         }
     }

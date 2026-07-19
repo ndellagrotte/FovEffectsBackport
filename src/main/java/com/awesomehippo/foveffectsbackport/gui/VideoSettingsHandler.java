@@ -1,6 +1,10 @@
 package com.awesomehippo.foveffectsbackport.gui;
 
+import com.awesomehippo.foveffectsbackport.FovEffectsBackport;
 import com.awesomehippo.foveffectsbackport.config.Config;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionsRowList;
@@ -8,11 +12,16 @@ import net.minecraft.client.gui.GuiVideoSettings;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class VideoSettingsHandler {
+    private static final Logger LOGGER = LogManager.getLogger(FovEffectsBackport.MOD_ID);
+
     private static final int SLIDER_ID = 0xF0EFEC75; // basically a random ID
     private static final int ROTN_SLIDER_ID = 0xF0EFEC76; // basically not a random ID
+
+    private static boolean warnedNoRowList = false;
 
     private GuiSlider slider;
     private int lastPercent = -1;
@@ -26,6 +35,27 @@ public class VideoSettingsHandler {
         }
 
         GuiVideoSettings screen = (GuiVideoSettings) event.getGui();
+
+        // now fetched reflectively instead of via AT because OptiFine
+        // replaces the whole video settings screen with its own class,
+        // and a hard field reference will crash with NoSuchFieldError
+        // on their layouts
+        Object rowList;
+        try {
+            rowList = ObfuscationReflectionHelper.getPrivateValue(GuiVideoSettings.class, screen, "field_146501_h", "optionsRowList");
+        } catch (Exception e) {
+            rowList = null;
+        }
+
+        if (!(rowList instanceof GuiOptionsRowList)) {
+            if (!warnedNoRowList) {
+                warnedNoRowList = true;
+                LOGGER.warn("Video settings screen has no vanilla options row list (OptiFine or another mod replaced it); the FOV Effects and FOV Clamp controls will not be shown. Both settings still work from the config file.");
+            }
+            slider = null;
+            return;
+        }
+
         lastPercent = Config.getSliderPercent();
 
         slider = new GuiSlider(
@@ -66,7 +96,7 @@ public class VideoSettingsHandler {
         );
         clampSlider.displayString = clampSliderText(Config.getRotnClampLevel());
 
-        GuiOptionsRowList rows = (GuiOptionsRowList) screen.optionsRowList;
+        GuiOptionsRowList rows = (GuiOptionsRowList) rowList;
         rows.options.add(new GuiOptionsRowList.Row(slider, clampSlider));
     }
 
