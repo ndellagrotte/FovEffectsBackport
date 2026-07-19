@@ -1,8 +1,11 @@
 package com.awesomehippo.foveffectsbackport;
 
+import com.awesomehippo.foveffectsbackport.command.CommandFovClamp;
+import com.awesomehippo.foveffectsbackport.command.CommandFovEffects;
 import com.awesomehippo.foveffectsbackport.config.Config;
 import com.awesomehippo.foveffectsbackport.gui.VideoSettingsHandler;
 
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -28,5 +31,10 @@ public class FovEffectsBackport {
 
         MinecraftForge.EVENT_BUS.register(new FovEffectsBackportHandler());
         MinecraftForge.EVENT_BUS.register(new VideoSettingsHandler());
+
+        // client-side commands as a fallback for when another mod (OptiFine)
+        // replaces the video settings screen
+        ClientCommandHandler.instance.registerCommand(new CommandFovEffects());
+        ClientCommandHandler.instance.registerCommand(new CommandFovClamp());
     }
 }

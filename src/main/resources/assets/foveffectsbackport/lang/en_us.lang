@@ -1,5 +1,7 @@
 options.fovEffectScale=FOV Effects
 options.fovEffectScale.tooltip=Controls how much the field of view can change with gameplay effects.
 options.rotnClamp=FOV Clamp
-options.rotnClamp.slow=Slow
+options.rotnClamp.slow=Slowness
 options.rotnClamp.tooltip=Prevents slowing effects from reducing the field of view further than the selected level of Slowness.
+commands.foveffects.usage=/foveffects [0-100]
+commands.fovclamp.usage=/fovclamp [off|1-5]
