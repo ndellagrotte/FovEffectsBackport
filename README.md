@@ -1,14 +1,9 @@
-# FOV Effects Backport (Forge - 1.12.2)
-[![Curseforge](https://img.shields.io/curseforge/dt/0000?style=for-the-badge&logo=curseforge&color=e05d44)](https://www.curseforge.com/minecraft/mc-mods/fov-effects-backport)&nbsp;
-[![Discord](https://img.shields.io/discord/1162694113720799263?style=for-the-badge&logo=discord&logoColor=fff&label=%20&color=0a48c4)](https://discord.gg/VxF3spJkUS)
+# FOV Utils (Forge - 1.12.2)
 
-<strong>A 1.12.2 backport of the FOV Effects slider. Configurable from 0 to 100% in Video Settings just like modern versions.</strong>
+<strong>This is a fork of a 1.12.2 backport of the FOV Effects slider. My fork contains an additional, non-vanilla feature: FOV Clamp, which allows you to set a static lower boundary that slowing effects can't drag your FOV past. </strong>
 
-## Version
-<span>
-This branch is for <strong>Forge 1.12.2</strong>. Check other branches for the other versions/loaders.
-</span>
+compatibility: if the client uses OptiFine, Celeritas, or any other mod that modifies or replaces minecraft's rendering engine, you may not be able to configure this mod from within Minecraft's native "Video Settings" menu. Instead, Use `/foveffects` and `/fovclamp` to configure the mod's features.
 
 ## Contributors
-
+- Thanks to **AwesomeHippo** for the original FOV Effects backport.
 - Special thanks to **Omgise** for zh_CN translation.
