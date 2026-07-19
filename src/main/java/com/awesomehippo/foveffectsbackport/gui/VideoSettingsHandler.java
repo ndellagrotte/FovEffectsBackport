@@ -6,10 +6,10 @@ import com.awesomehippo.foveffectsbackport.config.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionsRowList;
 import net.minecraft.client.gui.GuiVideoSettings;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -114,13 +114,8 @@ public class VideoSettingsHandler {
     }
 
     @SubscribeEvent
-    public void onActionPerformed(GuiScreenEvent.ActionPerformedEvent.Post event) {
-        if (!(event.getGui() instanceof GuiVideoSettings)) {
-            return;
-        }
-
-        GuiButton button = event.getButton();
-        if (button != null && button.enabled && button.id == 200) {
+    public void onGuiOpen(GuiOpenEvent event) {
+        if (slider != null && !(event.getGui() instanceof GuiVideoSettings)) {
             Config.save();
         }
     }
