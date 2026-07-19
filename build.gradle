@@ -85,6 +85,7 @@ dependencies {
 jar {
     manifest {
         attributes([
+            "FMLAT": "accesstransformer.cfg",
             "Specification-Title": "fov-effects-backport-1.12.2",
             "Specification-Vendor": "AwesomeHippo",
             "Specification-Version": "1",
